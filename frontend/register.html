@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Registrarse</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Estilos específicos para registro */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            min-height: 600px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .register-left {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-left::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .logo-section {
+            z-index: 1;
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-section h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-section p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .register-right {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            color: var(--dark-gray);
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: var(--transition);
+        }
+
+        .strength-weak { background: var(--error-color); width: 25%; }
+        .strength-fair { background: var(--warning-color); width: 50%; }
+        .strength-good { background: #66bb6a; width: 75%; }
+        .strength-strong { background: var(--success-color); width: 100%; }
+
+        .password-requirements {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 2px;
+        }
+
+        .requirement.valid { color: var(--success-color); }
+        .requirement.invalid { color: var(--error-color); }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .login-link p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+
+            .register-left,
+            .register-right {
+                padding: 40px 30px;
+            }
+
+            .logo-section h1 {
+                font-size: 2em;
+            }
+
+            .logo-icon {
+                font-size: 3em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText">Mensaje de notificación</span>
+    </div>
+
+    <!-- Register Container -->
+    <div class="register-container">
+        <!-- Left Side -->
+        <div class="register-left">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h1>CreditoSys</h1>
+                <p>Únete a nuestro sistema inteligente de gestión de créditos y comienza a optimizar tus oportunidades financieras.</p>
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="register-right">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>Crear Cuenta</h2>
+                    <p>Completa el formulario para registrarte</p>
+                </div>
+
+                <!-- Register Form (MODIFICADO) -->
+                <form id="registerForm" class="auth-form"> <!-- Añadido id="registerForm" y quitado onsubmit -->
+                    <!-- Campos de Nombre y Apellido combinados en uno solo para 'username' -->
+                    <div class="form-group">
+                        <label class="form-label" for="registerUsername">Nombre de Usuario</label>
+                        <div style="position: relative;">
+                            <i class="fas fa-user input-icon"></i> <!-- Icono de usuario -->
+                            <input type="text" class="form-input with-icon" id="registerUsername" placeholder="Tu nombre de usuario" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerEmail">Email</label>
+                        <div style="position: relative;">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" class="form-input with-icon" id="registerEmail" placeholder="tu@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerPhone">Teléfono</label> <!-- Cambiado de registerTelefono a registerPhone -->
+                        <div style="position: relative;">
+                            <i class="fas fa-phone input-icon"></i>
+                            <input type="tel" class="form-input with-icon" id="registerPhone" placeholder="999 999 999" pattern="[0-9]{9}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerDNI">DNI</label> <!-- Cambiado de registerDni a registerDNI -->
+                        <div style="position: relative;">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input type="text" class="form-input with-icon" id="registerDNI" placeholder="12345678" pattern="[0-9]{8}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">Contraseña</label>
+                        <div style="position: relative;">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" class="form-input with-icon" id="registerPassword" placeholder="••••••••" required oninput="checkPasswordStrength(this.value)">
+                            <button type="button" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--primary-color); cursor: pointer;" onclick="togglePassword('registerPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                        </div>
+                        <div class="password-requirements" id="passwordRequirements">
+                            <div class="requirement invalid" id="lengthReq">
+                                <i class="fas fa-times"></i> Mínimo 8 caracteres
+                            </div>
+                            <div class="requirement invalid" id="upperReq">
+                                <i class="fas fa-times"></i> Una mayúscula
+                            </div>
+                            <div class="requirement invalid" id="numberReq">
+                                <i class="fas fa-times"></i> Un número
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="registerConfirmPassword">Confirmar Contraseña</label> <!-- Cambiado de confirmPassword a registerConfirmPassword -->
+                        <div style="position: relative;">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" class="form-input with-icon" id="registerConfirmPassword" placeholder="••••••••" required oninput="checkPasswordMatch()">
+                            <span id="passwordMatch" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2em;"></span>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="acceptTerms" required>
+                        <label class="checkbox-label" for="acceptTerms">
+                            Acepto los <a href="#" onclick="showNotification('Términos en desarrollo', 'info')">términos y condiciones</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i>
+                        Crear Cuenta
+                    </button>
+                </form>
+
+                <!-- Login Link -->
+                <div class="login-link">
+                    <p>¿Ya tienes una cuenta?</p>
+                    <a href="login.html">Iniciar sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

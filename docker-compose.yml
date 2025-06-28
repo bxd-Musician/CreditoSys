@@ -1,0 +1,49 @@
+# CreditoSys/docker-compose.yml
+#version: '3.8'
+
+services:
+  # Servicio de la base de datos PostgreSQL
+  db:
+    image: postgres:17 # Usa la imagen oficial de PostgreSQL versión 17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Monta un volumen para persistir los datos de la DB
+    environment:
+      POSTGRES_DB: creditosys_db
+      POSTGRES_USER: creditosys_user
+      POSTGRES_PASSWORD: DiscJockey001 # ¡IMPORTANTE: CAMBIA ESTA CONTRASEÑA POR UNA SEGURA!
+    ports:
+      - "5432:5432" # Opcional: expone el puerto de PostgreSQL al host, útil para herramientas externas
+
+  # Servicio del backend Django
+  backend:
+    build: ./backend # Construye la imagen usando el Dockerfile en el directorio ./backend
+    #command: python manage.py runserver 0.0.0.0:8000 # Comando para iniciar el servidor Django
+    volumes:
+      - ./backend:/app # Monta el código fuente de tu backend en el contenedor para desarrollo
+    ports:
+      - "8000:8000" # Mapea el puerto 8000 del contenedor al puerto 8000 de tu host
+    env_file:
+      - .env.backend # Carga variables de entorno desde este archivo
+    depends_on:
+      - db # Asegura que el servicio 'db' se inicie antes que 'backend'
+
+  # Servicio pgAdmin4 para administración de PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: creditosys-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@creditosys.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80" # Accede a pgAdmin4 en http://localhost:5050
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin # Persiste la configuración de pgAdmin4
+    depends_on:
+      - db
+    restart: unless-stopped
+
+# Volúmenes que se usarán en los servicios
+volumes:
+  postgres_data:
+  pgadmin_data: # Nuevo volumen para persistir configuración de pgAdmin4

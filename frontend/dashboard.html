@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <h1>CreditoSys</h1>
+                    <small>Sistema de Gestión de Créditos</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Cargando...</strong>
+                    <br>
+                    <small id="userRole">Usuario</small>
+                </div>
+                <div class="user-avatar" id="userAvatar">U</div>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation ACTUALIZADA -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="irADashboard()">
+                <i class="fas fa-chart-dashboard"></i> Dashboard
+            </button>
+            <button class="nav-tab" onclick="irASolicitudes()">
+                <i class="fas fa-file-alt"></i> Solicitudes
+            </button>
+            <button class="nav-tab" onclick="irANuevaSolicitud()">
+                <i class="fas fa-plus-circle"></i> Nueva Solicitud
+            </button>
+            <button class="nav-tab" onclick="showSection('documentos')">
+                <i class="fas fa-folder-open"></i> Documentos
+            </button>
+            <!-- NUEVO: Enlace para Evaluadores -->
+            <button class="nav-tab d-none" onclick="irAEvaluacion()" id="evaluacionTab">
+                <i class="fas fa-search"></i> Evaluación
+            </button>
+            <!-- NUEVO: Enlace para Administradores -->
+            <button class="nav-tab d-none" onclick="irAAdmin()" id="adminTab">
+                <i class="fas fa-cogs"></i> Administración
+            </button>
+            <button class="nav-tab d-none" onclick="showSection('reportes')" id="reportesTab">
+                <i class="fas fa-chart-bar"></i> Reportes
+            </button>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <!-- Welcome Message -->
+            <div class="card mb-3">
+                <div class="card-body text-center" style="background: var(--primary-gradient); color: white; border-radius: var(--border-radius-lg);">
+                    <h2>¡Bienvenido al Sistema!</h2>
+                    <p>Has iniciado sesión exitosamente en CreditoSys</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions ACTUALIZADA -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="quickActionsRow">
+                        <!-- Acciones para TODOS los usuarios -->
+                        <div class="col-4">
+                            <a href="nueva-solicitud.html" class="btn btn-primary btn-block btn-lg">
+                                <i class="fas fa-plus-circle"></i>
+                                <br>
+                                Nueva Solicitud
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <a href="solicitudes.html" class="btn btn-secondary btn-block btn-lg">
+                                <i class="fas fa-list"></i>
+                                <br>
+                                Ver Solicitudes
+                            </a>
+                        </div>
+                        <div class="col-4">
+                            <button class="btn btn-outline btn-block btn-lg" onclick="showSection('documentos')">
+                                <i class="fas fa-upload"></i>
+                                <br>
+                                Subir Documentos
+                            </button>
+                        </div>
+                        
+                        <!-- Acciones para EVALUADORES (se mostrarán dinámicamente) -->
+                        <div class="col-4 d-none" id="actionEvaluacion">
+                            <a href="evaluacion.html" class="btn btn-success btn-block btn-lg">
+                                <i class="fas fa-search"></i>
+                                <br>
+                                Panel Evaluación
+                            </a>
+                        </div>
+                        
+                        <!-- Acciones para ADMINISTRADORES (se mostrarán dinámicamente) -->
+                        <div class="col-4 d-none" id="actionAdmin">
+                            <a href="admin.html" class="btn btn-danger btn-block btn-lg">
+                                <i class="fas fa-cogs"></i>
+                                <br>
+                                Administración
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Grid -->
+            <div class="dashboard-grid">
+                <div class="stat-card bounce-in">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-number" id="totalSolicitudes">3</div>
+                    <div class="stat-label">Total Solicitudes</div>
+                </div>
+                <div class="stat-card bounce-in">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-number" id="solicitudesAprobadas">1</div>
+                    <div class="stat-label">Aprobadas</div>
+                </div>
+                <div class="stat-card bounce-in">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number" id="solicitudesPendientes">2</div>
+                    <div class="stat-label">Pendientes</div>
+                </div>
+                <div class="stat-card bounce-in">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-number" id="montoTotal">S/ 15,000</div>
+                    <div class="stat-label">Monto Aprobado</div>
+                </div>
+            </div>
+
+            <!-- Credit Score Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Mi Score Crediticio</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="score-circle">
+                        <div class="score-text" id="scoreValue">75</div>
+                    </div>
+                    <h4>Score: <span id="scoreText">Bueno</span></h4>
+                    <p>Tu score crediticio te permite acceder a créditos con tasas preferenciales.</p>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Solicitudes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clock"></i> Solicitudes Recientes</h3>
+                    <a href="solicitudes.html" class="btn btn-primary btn-sm">
+                        <i class="fas fa-eye"></i> Ver Todas
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#001</td>
+                                    <td>15/05/2025</td>
+                                    <td>S/ 15,000</td>
+                                    <td><span class="badge status-aprobada">Aprobada</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalle('001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#002</td>
+                                    <td>18/05/2025</td>
+                                    <td>S/ 25,000</td>
+                                    <td><span class="badge status-revision">En Revisión</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalle('002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Notifications -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bell"></i> Notificaciones Recientes</h3>
+                </div>
+                <div class="card-body">
+                    <div id="notificaciones">
+                        <div style="padding: 15px; border-left: 4px solid var(--primary-color); margin-bottom: 15px; background: rgba(102, 126, 234, 0.05);">
+                            <strong>Solicitud Aprobada</strong><br>
+                            <small>Tu solicitud de crédito por S/ 15,000 ha sido aprobada. Tasa: 12.5% anual.</small>
+                        </div>
+                        <div style="padding: 15px; border-left: 4px solid var(--warning-color); margin-bottom: 15px; background: rgba(255, 167, 38, 0.05);">
+                            <strong>Documentos Pendientes</strong><br>
+                            <small>Faltan subir 2 documentos para completar tu solicitud #002.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentos Section (Solo esta sección queda aquí) -->
+        <section id="documentos" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-folder-open"></i> Gestión de Documentos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Solicitud</label>
+                        <select class="form-select" id="solicitudDocumentos">
+                            <option value="001">Solicitud #001 - S/ 15,000</option>
+                            <option value="002">Solicitud #002 - S/ 25,000</option>
+                            <option value="003">Solicitud #003 - S/ 5,000</option>
+                        </select>
+                    </div>
+
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Subir Documentos</h4>
+                        <p>Haz clic aquí o arrastra los archivos</p>
+                        <small>Formatos permitidos: PDF, JPG, PNG (Máx. 50MB)</small>
+                        <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                    </div>
+
+                    <div class="table-container mt-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tipo de Documento</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Subida</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>DNI</td>
+                                    <td><span class="badge status-aprobada">Validado</span></td>
+                                    <td>15/05/2025</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Recibo de Sueldo</td>
+                                    <td><span class="badge status-pendiente">Pendiente</span></td>
+                                    <td>-</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            <i class="fas fa-upload"></i> Subir
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Historial Crediticio</td>
+                                    <td><span class="badge status-revision">En Revisión</span></td>
+                                    <td>18/05/2025</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evaluación Section (Solo para Evaluadores/Admin) -->
+        <section id="evaluacion" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-search"></i> Evaluación de Solicitudes</h3>
+                </div>
+                <div class="card-body">
+                    <p>Panel de evaluación para revisar y aprobar solicitudes de crédito.</p>
+                    <div class="text-center mt-3">
+                        <a href="evaluacion.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-external-link-alt"></i> Ir al Panel Completo de Evaluación
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reportes Section (Solo para Admin) -->
+        <section id="reportes" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Reportes y Analytics</h3>
+                </div>
+                <div class="card-body">
+                    <p>Generación de reportes y análisis del sistema de créditos.</p>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <button class="btn btn-primary btn-block">
+                                <i class="fas fa-file-pdf"></i> Reporte Mensual
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-success btn-block">
+                                <i class="fas fa-chart-line"></i> Analytics
+                            </button>
+                        </div>
+                        <div class="col">
+                            <a href="admin.html" class="btn btn-danger btn-block">
+                                <i class="fas fa-cogs"></i> Panel Admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // FUNCIONES DE NAVEGACIÓN ACTUALIZADAS
+        function irADashboard() {
+            showSection('dashboard');
+        }
+
+        function irASolicitudes() {
+            window.location.href = 'solicitudes.html';
+        }
+
+        function irANuevaSolicitud() {
+            window.location.href = 'nueva-solicitud.html';
+        }
+
+        // NUEVAS FUNCIONES para las páginas creadas
+        function irAEvaluacion() {
+            window.location.href = 'evaluacion.html';
+        }
+
+        function irAAdmin() {
+            window.location.href = 'admin.html';
+        }
+
+        function verDetalle(id) {
+            window.location.href = `solicitudes.html?id=${id}`;
+        }
+
+        // Función para mostrar secciones locales
+        function showSection(sectionName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const activeTab = event ? event.target : 
+                             document.querySelector(`[onclick*="${sectionName}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+            }
+        }
+
+        // FUNCIÓN MEJORADA para mostrar elementos según el rol
+        function updateRoleBasedUI() {
+            if (!currentUser) return;
+            
+            const evaluacionTab = document.getElementById('evaluacionTab');
+            const adminTab = document.getElementById('adminTab');
+            const reportesTab = document.getElementById('reportesTab');
+            const actionEvaluacion = document.getElementById('actionEvaluacion');
+            const actionAdmin = document.getElementById('actionAdmin');
+            
+            console.log('Actualizando UI para rol:', currentUser.type);
+            
+            // Mostrar elementos para EVALUADORES
+            if (currentUser.type === 'evaluador') {
+                if (evaluacionTab) {
+                    evaluacionTab.classList.remove('d-none');
+                    evaluacionTab.style.display = 'flex';
+                }
+                if (reportesTab) {
+                    reportesTab.classList.remove('d-none');
+                    reportesTab.style.display = 'flex';
+                }
+                if (actionEvaluacion) {
+                    actionEvaluacion.classList.remove('d-none');
+                    actionEvaluacion.style.display = 'block';
+                }
+            }
+            
+            // Mostrar elementos para ADMINISTRADORES
+            if (currentUser.type === 'admin' || currentUser.type === 'administrador') {
+                if (evaluacionTab) {
+                    evaluacionTab.classList.remove('d-none');
+                    evaluacionTab.style.display = 'flex';
+                }
+                if (adminTab) {
+                    adminTab.classList.remove('d-none');
+                    adminTab.style.display = 'flex';
+                }
+                if (reportesTab) {
+                    reportesTab.classList.remove('d-none');
+                    reportesTab.style.display = 'flex';
+                }
+                if (actionEvaluacion) {
+                    actionEvaluacion.classList.remove('d-none');
+                    actionEvaluacion.style.display = 'block';
+                }
+                if (actionAdmin) {
+                    actionAdmin.classList.remove('d-none');
+                    actionAdmin.style.display = 'block';
+                }
+            }
+        }
+
+        // ACTUALIZAR LA FUNCIÓN updateUserInterface para incluir roles
+        function updateUserInterface() {
+            if (!currentUser) return;
+            
+            const userName = document.getElementById('userName');
+            const userRole = document.getElementById('userRole');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (userName) userName.textContent = currentUser.name;
+            if (userRole) {
+                userRole.textContent = currentUser.type.charAt(0).toUpperCase() + currentUser.type.slice(1);
+            }
+            if (userAvatar) {
+                const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+                userAvatar.textContent = initials;
+            }
+            
+            // IMPORTANTE: Llamar a la función para mostrar elementos según el rol
+            updateRoleBasedUI();
+        }
+
+        // Inicializar cuando se carga la página
+        window.addEventListener('load', function() {
+            // Cargar datos del usuario
+            loadUserData();
+            
+            // Activar la pestaña de dashboard por defecto
+            const dashboardTab = document.querySelector('[onclick="irADashboard()"]');
+            if (dashboardTab) {
+                dashboardTab.classList.add('active');
+            }
+            
+            // Actualizar interfaz según el rol
+            updateUserInterface();
+        });
+    </script>
+</body>
+</html>

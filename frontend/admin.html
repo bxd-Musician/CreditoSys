@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Panel de Administración</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <h1>CreditoSys</h1>
+                    <small>Panel de Administración</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Administrador</strong>
+                    <br>
+                    <small id="userRole">Admin</small>
+                </div>
+                <div class="user-avatar" id="userAvatar">A</div>
+                <div class="d-flex gap-1">
+                    <a href="dashboard.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('overview')">
+                <i class="fas fa-chart-pie"></i> Overview
+            </button>
+            <button class="nav-tab" onclick="showSection('usuarios')">
+                <i class="fas fa-users"></i> Usuarios
+            </button>
+            <button class="nav-tab" onclick="showSection('politicas')">
+                <i class="fas fa-cogs"></i> Políticas
+            </button>
+            <button class="nav-tab" onclick="showSection('auditoria')">
+                <i class="fas fa-shield-alt"></i> Auditoría
+            </button>
+            <button class="nav-tab" onclick="showSection('reportes')">
+                <i class="fas fa-chart-bar"></i> Reportes
+            </button>
+            <button class="nav-tab" onclick="showSection('sistema')">
+                <i class="fas fa-server"></i> Sistema
+            </button>
+        </nav>
+
+        <!-- Overview Section -->
+        <section id="overview" class="content-section active">
+            <div class="card mb-3">
+                <div class="card-body text-center" style="background: var(--primary-gradient); color: white; border-radius: var(--border-radius-lg);">
+                    <h2>Panel de Control Administrativo</h2>
+                    <p>Gestión completa del sistema CreditoSys</p>
+                </div>
+            </div>
+
+            <!-- Métricas Generales -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">247</div>
+                    <div class="stat-label">Total Usuarios</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-number">1,834</div>
+                    <div class="stat-label">Solicitudes Procesadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-number">S/ 2.8M</div>
+                    <div class="stat-label">Monto Total Aprobado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-number">94.2%</div>
+                    <div class="stat-label">Uptime del Sistema</div>
+                </div>
+            </div>
+
+            <!-- Resumen de Actividad -->
+            <div class="row">
+                <div class="col-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Actividad Reciente</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="padding: 10px; border-left: 3px solid var(--success-color); margin-bottom: 10px;">
+                                <strong>Usuario Creado</strong><br>
+                                <small>María López - Cliente</small><br>
+                                <small>Hace 5 minutos</small>
+                            </div>
+                            <div style="padding: 10px; border-left: 3px solid var(--primary-color); margin-bottom: 10px;">
+                                <strong>Política Actualizada</strong><br>
+                                <small>Umbral de aprobación: 75%</small><br>
+                                <small>Hace 1 hora</small>
+                            </div>
+                            <div style="padding: 10px; border-left: 3px solid var(--warning-color); margin-bottom: 10px;">
+                                <strong>Backup Completado</strong><br>
+                                <small>Backup automático exitoso</small><br>
+                                <small>Hace 3 horas</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Estado del Sistema</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>Base de Datos</span>
+                                <span class="badge status-aprobada">Online</span>
+                            </div>
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>API de Scoring</span>
+                                <span class="badge status-aprobada">Online</span>
+                            </div>
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>Sistema de Pagos</span>
+                                <span class="badge status-aprobada">Online</span>
+                            </div>
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>Servidor de Archivos</span>
+                                <span class="badge status-revision">Mantenimiento</span>
+                            </div>
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>CPU</span>
+                                <span>45%</span>
+                            </div>
+                            <div class="d-flex justify-between align-center mb-2">
+                                <span>Memoria</span>
+                                <span>62%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gestión de Usuarios -->
+        <section id="usuarios" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-users"></i> Gestión de Usuarios</h3>
+                    <button class="btn btn-primary" onclick="abrirModalUsuario()">
+                        <i class="fas fa-user-plus"></i> Crear Usuario
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Filtros -->
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <input type="text" class="form-input" placeholder="Buscar por nombre o email..." id="buscarUsuario">
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" id="filtroRol">
+                                <option value="">Todos los roles</option>
+                                <option value="cliente">Cliente</option>
+                                <option value="evaluador">Evaluador</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="auditor">Auditor Externo</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" id="filtroEstado">
+                                <option value="">Todos los estados</option>
+                                <option value="activo">Activos</option>
+                                <option value="inactivo">Inactivos</option>
+                                <option value="bloqueado">Bloqueados</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Usuarios -->
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Último Acceso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>001</td>
+                                    <td>Juan Pérez</td>
+                                    <td>juan@email.com</td>
+                                    <td><span class="badge" style="background: var(--primary-color); color: white;">Cliente</span></td>
+                                    <td><span class="badge status-aprobada">Activo</span></td>
+                                    <td>21/05/2025 10:30</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-primary btn-sm" onclick="editarUsuario('001')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-warning btn-sm" onclick="cambiarEstado('001')">
+                                                <i class="fas fa-user-lock"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('001')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>María García</td>
+                                    <td>maria@email.com</td>
+                                    <td><span class="badge" style="background: var(--success-color); color: white;">Evaluador</span></td>
+                                    <td><span class="badge status-aprobada">Activo</span></td>
+                                    <td>21/05/2025 09:15</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-primary btn-sm" onclick="editarUsuario('002')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-warning btn-sm" onclick="cambiarEstado('002')">
+                                                <i class="fas fa-user-lock"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('002')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>003</td>
+                                    <td>Carlos López</td>
+                                    <td>carlos@email.com</td>
+                                    <td><span class="badge" style="background: var(--error-color); color: white;">Admin</span></td>
+                                    <td><span class="badge status-aprobada">Activo</span></td>
+                                    <td>21/05/2025 08:45</td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-primary btn-sm" onclick="editarUsuario('003')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                <i class="fas fa-shield-alt"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gestión de Políticas -->
+        <section id="politicas" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> Configuración de Políticas Crediticias</h3>
+                    <button class="btn btn-success" onclick="guardarPoliticas()">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Umbrales de Aprobación</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Score Mínimo para Aprobación Automática</label>
+                                        <input type="number" class="form-input" id="umbralAprobacion" value="70" min="0" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Score Mínimo para Revisión Manual</label>
+                                        <input type="number" class="form-input" id="umbralRevision" value="50" min="0" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Monto Máximo Aprobación Automática (S/)</label>
+                                        <input type="number" class="form-input" id="montoMaximo" value="100000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Ponderaciones del Score (Según UML)</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Historial Crediticio (%)</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="40" id="pesoHistorialAdmin">
+                                        <span id="pesoHistorialAdminValue">40%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ingresos vs Deuda (%)</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="30" id="pesoIngresosAdmin">
+                                        <span id="pesoIngresosAdminValue">30%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Activos (%)</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="20" id="pesoActivosAdmin">
+                                        <span id="pesoActivosAdminValue">20%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Comportamiento (%)</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="10" id="pesoComportamientoAdmin">
+                                        <span id="pesoComportamientoAdminValue">10%</span>
+                                    </div>
+                                    <div class="card mt-2" style="background: rgba(102, 126, 234, 0.1);">
+                                        <div class="card-body text-center">
+                                            <strong>Total: <span id="totalPonderacionAdmin">100%</span></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4>Requisitos Documentales</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">
+                                    <h5>Documentos Obligatorios</h5>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqDNI" checked disabled>
+                                        <label for="reqDNI">DNI (Obligatorio)</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqRecibos" checked>
+                                        <label for="reqRecibos">Recibos de Sueldo</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqHistorial" checked>
+                                        <label for="reqHistorial">Historial Crediticio</label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <h5>Documentos Opcionales</h5>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqDeclaracion">
+                                        <label for="reqDeclaracion">Declaración de Renta</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqEstados">
+                                        <label for="reqEstados">Estados de Cuenta</label>
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reqPropiedades">
+                                        <label for="reqPropiedades">Escrituras de Propiedad</label>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <h5>Configuración de Validación</h5>
+                                    <div class="form-group">
+                                        <label>Tiempo máximo de validación (días)</label>
+                                        <input type="number" class="form-input" value="3" min="1" max="30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tamaño máximo de archivo (MB)</label>
+                                        <input type="number" class="form-input" value="50" min="1" max="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auditoría -->
+        <section id="auditoria" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shield-alt"></i> Auditoría del Sistema</h3>
+                    <button class="btn btn-primary" onclick="exportarAuditoria()">
+                        <i class="fas fa-download"></i> Exportar Logs
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Filtros de Auditoría -->
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <input type="date" class="form-input" id="fechaInicioAudit">
+                        </div>
+                        <div class="col-4">
+                            <input type="date" class="form-input" id="fechaFinAudit">
+                        </div>
+                        <div class="col-4">
+                            <select class="form-select" id="tipoEvento">
+                                <option value="">Todos los eventos</option>
+                                <option value="login">Inicios de sesión</option>
+                                <option value="solicitud">Solicitudes</option>
+                                <option value="aprobacion">Aprobaciones</option>
+                                <option value="rechazo">Rechazos</option>
+                                <option value="admin">Acciones administrativas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Logs de Auditoría -->
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Usuario</th>
+                                    <th>Acción</th>
+                                    <th>Recurso</th>
+                                    <th>IP</th>
+                                    <th>Estado</th>
+                                    <th>Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>21/05/2025 10:30:15</td>
+                                    <td>juan@email.com</td>
+                                    <td>LOGIN</td>
+                                    <td>/auth/login</td>
+                                    <td>192.168.1.100</td>
+                                    <td><span class="badge status-aprobada">Exitoso</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalleAudit('001')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>21/05/2025 10:25:42</td>
+                                    <td>maria@email.com</td>
+                                    <td>APROBAR_SOLICITUD</td>
+                                    <td>/solicitudes/004</td>
+                                    <td>192.168.1.50</td>
+                                    <td><span class="badge status-aprobada">Exitoso</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalleAudit('002')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>21/05/2025 10:20:18</td>
+                                    <td>admin@email.com</td>
+                                    <td>ACTUALIZAR_POLITICA</td>
+                                    <td>/admin/politicas</td>
+                                    <td>192.168.1.10</td>
+                                    <td><span class="badge status-aprobada">Exitoso</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalleAudit('003')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>21/05/2025 10:15:33</td>
+                                    <td>usuario@email.com</td>
+                                    <td>LOGIN</td>
+                                    <td>/auth/login</td>
+                                    <td>192.168.1.200</td>
+                                    <td><span class="badge status-rechazada">Fallido</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalleAudit('004')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reportes Administrativos -->
+        <section id="reportes" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Reportes Administrativos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Reportes Disponibles</h4>
+                                </div>
+                                <div class="card-body">
+                                    <button class="btn btn-primary btn-block mb-2" onclick="generarReporte('usuarios')">
+                                        <i class="fas fa-users"></i> Reporte de Usuarios
+                                    </button>
+                                    <button class="btn btn-primary btn-block mb-2" onclick="generarReporte('solicitudes')">
+                                        <i class="fas fa-file-alt"></i> Reporte de Solicitudes
+                                    </button>
+                                    <button class="btn btn-primary btn-block mb-2" onclick="generarReporte('morosidad')">
+                                        <i class="fas fa-exclamation-triangle"></i> Análisis de Morosidad
+                                    </button>
+                                    <button class="btn btn-primary btn-block mb-2" onclick="generarReporte('rendimiento')">
+                                        <i class="fas fa-tachometer-alt"></i> Rendimiento del Sistema
+                                    </button>
+                                    <button class="btn btn-primary btn-block mb-2" onclick="generarReporte('financiero')">
+                                        <i class="fas fa-chart-line"></i> Reporte Financiero
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Métricas del Mes</h4>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <h3 style="color: var(--primary-color);">156</h3>
+                                        <p>Nuevas Solicitudes</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h3 style="color: var(--success-color);">118</h3>
+                                        <p>Aprobaciones</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h3 style="color: var(--error-color);">23</h3>
+                                        <p>Rechazos</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h3 style="color: var(--warning-color);">15</h3>
+                                        <p>En Revisión</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Configurar Alertas</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Alerta por alta morosidad (%)</label>
+                                        <input type="number" class="form-input" value="5" min="1" max="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Alerta por bajo rendimiento (%)</label>
+                                        <input type="number" class="form-input" value="85" min="50" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Alerta por uso de CPU (%)</label>
+                                        <input type="number" class="form-input" value="80" min="50" max="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Notificaciones por email</label>
+                                        <input type="email" class="form-input" placeholder="admin@empresa.com">
+                                    </div>
+                                    <button class="btn btn-success btn-block" onclick="configurarAlertas()">
+                                        <i class="fas fa-bell"></i> Configurar Alertas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gestión del Sistema -->
+        <section id="sistema" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-server"></i> Gestión del Sistema</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Backup y Restauración</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Último backup:</strong> 21/05/2025 02:00</p>
+                                    <p><strong>Estado:</strong> <span class="badge status-aprobada">Exitoso</span></p>
+                                    <p><strong>Tamaño:</strong> 2.3 GB</p>
+                                    
+                                    <div class="d-flex gap-1 mt-3">
+                                        <button class="btn btn-primary btn-sm" onclick="crearBackup()">
+                                            <i class="fas fa-save"></i> Backup Manual
+                                        </button>
+                                        <button class="btn btn-warning btn-sm" onclick="restaurarSistema()">
+                                            <i class="fas fa-undo"></i> Restaurar
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="form-group mt-3">
+                                        <label>Backup automático</label>
+                                        <select class="form-select">
+                                            <option value="diario">Diario</option>
+                                            <option value="semanal" selected>Semanal</option>
+                                            <option value="mensual">Mensual</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Exportación de Datos</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Tipo de datos</label>
+                                        <select class="form-select" id="tipoExportacion">
+                                            <option value="usuarios">Usuarios</option>
+                                            <option value="solicitudes">Solicitudes</option>
+                                            <option value="auditoria">Logs de Auditoría</option>
+                                            <option value="reportes">Reportes</option>
+                                            <option value="completo">Exportación Completa</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Formato</label>
+                                        <select class="form-select" id="formatoExportacion">
+                                            <option value="csv">CSV</option>
+                                            <option value="excel">Excel</option>
+                                            <option value="pdf">PDF</option>
+                                            <option value="json">JSON</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Rango de fechas</label>
+                                        <input type="date" class="form-input mb-1" id="fechaInicioExp">
+                                        <input type="date" class="form-input" id="fechaFinExp">
+                                    </div>
+                                    <button class="btn btn-success btn-block" onclick="exportarDatos()">
+                                        <i class="fas fa-download"></i> Exportar Datos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuración Avanzada -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4>Configuración Avanzada del Sistema</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-4">
+                                    <h5>Parámetros de Rendimiento</h5>
+                                    <div class="form-group">
+                                        <label>Timeout de sesión (minutos)</label>
+                                        <input type="number" class="form-input" value="30" min="5" max="480">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Máximo intentos de login</label>
+                                        <input type="number" class="form-input" value="5" min="3" max="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Cache TTL (segundos)</label>
+                                        <input type="number" class="form-input" value="3600" min="300" max="86400">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <h5>Configuración de Email</h5>
+                                    <div class="form-group">
+                                        <label>Servidor SMTP</label>
+                                        <input type="text" class="form-input" value="smtp.empresa.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Puerto SMTP</label>
+                                        <input type="number" class="form-input" value="587">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email remitente</label>
+                                        <input type="email" class="form-input" value="noreply@creditosys.com">
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <h5>Integraciones Externas</h5>
+                                    <div class="d-flex justify-between align-center mb-2">
+                                        <span>API de Scoring</span>
+                                        <span class="badge status-aprobada">Conectado</span>
+                                    </div>
+                                    <div class="d-flex justify-between align-center mb-2">
+                                        <span>Sistema de Pagos</span>
+                                        <span class="badge status-aprobada">Conectado</span>
+                                    </div>
+                                    <div class="d-flex justify-between align-center mb-2">
+                                        <span>Centrales de Riesgo</span>
+                                        <span class="badge status-aprobada">Conectado</span>
+                                    </div>
+                                    <div class="d-flex justify-between align-center mb-2">
+                                        <span>Servicio de SMS</span>
+                                        <span class="badge status-revision">Desconectado</span>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm mt-2" onclick="probarConexiones()">
+                                        <i class="fas fa-plug"></i> Probar Conexiones
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3">
+                                <button class="btn btn-success btn-lg" onclick="guardarConfiguracion()">
+                                    <i class="fas fa-save"></i> Guardar Configuración
+                                </button>
+                                <button class="btn btn-warning btn-lg ml-2" onclick="reiniciarSistema()">
+                                    <i class="fas fa-power-off"></i> Reiniciar Sistema
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal para Crear/Editar Usuario -->
+    <div class="modal" id="modalUsuario">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalUsuarioTitulo">Crear Usuario</h3>
+                <button class="modal-close" onclick="closeModal('modalUsuario')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formUsuario">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-input" id="modalNombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="modalEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Rol</label>
+                            <select class="form-select" id="modalRol" required>
+                                <option value="">Seleccionar rol</option>
+                                <option value="cliente">Cliente</option>
+                                <option value="evaluador">Evaluador</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="auditor">Auditor Externo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" id="modalEstado">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña Temporal</label>
+                        <input type="password" class="form-input" id="modalPassword">
+                        <small>Dejar vacío para generar automáticamente</small>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Funciones específicas del panel de administración
+        
+        function abrirModalUsuario(id = null) {
+            if (id) {
+                document.getElementById('modalUsuarioTitulo').textContent = 'Editar Usuario';
+                // Cargar datos del usuario
+            } else {
+                document.getElementById('modalUsuarioTitulo').textContent = 'Crear Usuario';
+                document.getElementById('formUsuario').reset();
+            }
+            showModal('modalUsuario');
+        }
+        
+        function editarUsuario(id) {
+            abrirModalUsuario(id);
+        }
+        
+        function cambiarEstado(id) {
+            showNotification(`Cambiando estado del usuario ${id}`, 'info');
+        }
+        
+        function eliminarUsuario(id) {
+            if (confirm('¿Está seguro de eliminar este usuario?')) {
+                showNotification(`Usuario ${id} eliminado`, 'success');
+            }
+        }
+        
+        function guardarPoliticas() {
+            showNotification('Políticas guardadas exitosamente', 'success');
+        }
+        
+        function exportarAuditoria() {
+            showNotification('Exportando logs de auditoría...', 'info');
+        }
+        
+        function verDetalleAudit(id) {
+            showNotification(`Mostrando detalle del evento ${id}`, 'info');
+        }
+        
+        function generarReporte(tipo) {
+            showNotification(`Generando reporte de ${tipo}...`, 'info');
+        }
+        
+        function configurarAlertas() {
+            showNotification('Alertas configuradas exitosamente', 'success');
+        }
+        
+        function crearBackup() {
+            showNotification('Iniciando backup manual...', 'info');
+        }
+        
+        function restaurarSistema() {
+            if (confirm('¿Está seguro de restaurar el sistema?')) {
+                showNotification('Iniciando restauración del sistema...', 'warning');
+            }
+        }
+        
+        function exportarDatos() {
+            const tipo = document.getElementById('tipoExportacion').value;
+            const formato = document.getElementById('formatoExportacion').value;
+            showNotification(`Exportando ${tipo} en formato ${formato}...`, 'info');
+        }
+        
+        function probarConexiones() {
+            showNotification('Probando conexiones externas...', 'info');
+        }
+        
+        function guardarConfiguracion() {
+            showNotification('Configuración guardada exitosamente', 'success');
+        }
+        
+        function reiniciarSistema() {
+            if (confirm('¿Está seguro de reiniciar el sistema? Esto afectará a todos los usuarios.')) {
+                showNotification('Reiniciando sistema...', 'warning');
+            }
+        }
+        
+        // Actualizar ponderaciones en tiempo real
+        function updatePonderacionesAdmin() {
+            const elementos = ['Historial', 'Ingresos', 'Activos', 'Comportamiento'];
+            let total = 0;
+            
+            elementos.forEach(elemento => {
+                const valor = document.getElementById(`peso${elemento}Admin`).value;
+                document.getElementById(`peso${elemento}AdminValue`).textContent = valor + '%';
+                total += parseInt(valor);
+            });
+            
+            document.getElementById('totalPonderacionAdmin').textContent = total + '%';
+            
+            // Cambiar color si no suma 100%
+            const totalElement = document.getElementById('totalPonderacionAdmin');
+            if (total === 100) {
+                totalElement.parentElement.style.background = 'rgba(76, 175, 80, 0.1)';
+            } else {
+                totalElement.parentElement.style.background = 'rgba(255, 107, 107, 0.1)';
+            }
+        }
+        
+        // Event listeners para las ponderaciones
+        ['Historial', 'Ingresos', 'Activos', 'Comportamiento'].forEach(elemento => {
+            const slider = document.getElementById(`peso${elemento}Admin`);
+            if (slider) {
+                slider.addEventListener('input', updatePonderacionesAdmin);
+            }
+        });
+        
+        // Función showSection personalizada
+        function showSection(sectionName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+            }
+        }
+        
+        // Inicializar cuando se carga la página
+        window.addEventListener('load', function() {
+            loadUserData();
+            updatePonderacionesAdmin();
+        });
+    </script>
+</body>
+</html>

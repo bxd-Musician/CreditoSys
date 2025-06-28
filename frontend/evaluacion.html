@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Panel de Evaluación</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <h1>CreditoSys</h1>
+                    <small>Panel de Evaluación</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Cargando...</strong>
+                    <br>
+                    <small id="userRole">Evaluador</small>
+                </div>
+                <div class="user-avatar" id="userAvatar">E</div>
+                <div class="d-flex gap-1">
+                    <a href="dashboard.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('pendientes')">
+                <i class="fas fa-clock"></i> Pendientes
+            </button>
+            <button class="nav-tab" onclick="showSection('validacion')">
+                <i class="fas fa-check-circle"></i> Validación
+            </button>
+            <button class="nav-tab" onclick="showSection('scoring')">
+                <i class="fas fa-calculator"></i> Scoring
+            </button>
+            <button class="nav-tab" onclick="showSection('revision')">
+                <i class="fas fa-search"></i> Revisión Manual
+            </button>
+            <button class="nav-tab" onclick="showSection('reportes')">
+                <i class="fas fa-chart-bar"></i> Reportes
+            </button>
+        </nav>
+
+        <!-- Estadísticas del Evaluador -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-number">12</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="stat-number">8</div>
+                <div class="stat-label">Evaluadas Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-number">75%</div>
+                <div class="stat-label">Tasa Aprobación</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">15 min</div>
+                <div class="stat-label">Tiempo Promedio</div>
+            </div>
+        </div>
+
+        <!-- Sección Pendientes -->
+        <section id="pendientes" class="content-section active">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Solicitudes Pendientes de Evaluación</h3>
+                    <button class="btn btn-primary" onclick="actualizarPendientes()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Monto</th>
+                                    <th>Fecha Solicitud</th>
+                                    <th>Estado</th>
+                                    <th>Prioridad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#004</td>
+                                    <td>Ana Torres</td>
+                                    <td>S/ 50,000</td>
+                                    <td>21/05/2025</td>
+                                    <td><span class="badge status-pendiente">Documentos Subidos</span></td>
+                                    <td><span class="badge" style="background: #ff6b6b; color: white;">Alta</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="iniciarEvaluacion('004')">
+                                            <i class="fas fa-play"></i> Evaluar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#005</td>
+                                    <td>Carlos Mendoza</td>
+                                    <td>S/ 25,000</td>
+                                    <td>20/05/2025</td>
+                                    <td><span class="badge status-revision">En Validación</span></td>
+                                    <td><span class="badge" style="background: #ffa726; color: white;">Media</span></td>
+                                    <td>
+                                        <button class="btn btn-success btn-sm" onclick="continuarEvaluacion('005')">
+                                            <i class="fas fa-arrow-right"></i> Continuar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#006</td>
+                                    <td>María Fernández</td>
+                                    <td>S/ 15,000</td>
+                                    <td>19/05/2025</td>
+                                    <td><span class="badge status-pendiente">Nueva</span></td>
+                                    <td><span class="badge" style="background: #4caf50; color: white;">Baja</span></td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="iniciarEvaluacion('006')">
+                                            <i class="fas fa-play"></i> Evaluar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Validación de Documentos -->
+        <section id="validacion" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-check"></i> Validación de Documentos - Solicitud #004</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <h4>Información del Cliente</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p><strong>Nombre:</strong> Ana Torres</p>
+                                    <p><strong>DNI:</strong> 12345678</p>
+                                    <p><strong>Email:</strong> ana.torres@email.com</p>
+                                    <p><strong>Teléfono:</strong> 999 888 777</p>
+                                    <p><strong>Monto:</strong> S/ 50,000</p>
+                                    <p><strong>Plazo:</strong> 60 meses</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <h4>Documentos a Validar</h4>
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-id-card"></i> DNI</h5>
+                                    <p>Documento Nacional de Identidad</p>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-primary btn-sm" onclick="verDocumento('dni')">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="validarDocumento('dni', true)">
+                                            <i class="fas fa-check"></i> Validar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="validarDocumento('dni', false)">
+                                            <i class="fas fa-times"></i> Rechazar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-receipt"></i> Recibos de Sueldo</h5>
+                                    <p>Últimos 3 meses</p>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-primary btn-sm" onclick="verDocumento('recibos')">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="validarDocumento('recibos', true)">
+                                            <i class="fas fa-check"></i> Validar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="validarDocumento('recibos', false)">
+                                            <i class="fas fa-times"></i> Rechazar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <h5><i class="fas fa-chart-line"></i> Historial Crediticio</h5>
+                                    <p>Reporte de centrales de riesgo</p>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-primary btn-sm" onclick="verDocumento('historial')">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="validarDocumento('historial', true)">
+                                            <i class="fas fa-check"></i> Validar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="validarDocumento('historial', false)">
+                                            <i class="fas fa-times"></i> Rechazar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button class="btn btn-primary btn-lg" onclick="finalizarValidacion()">
+                                    <i class="fas fa-arrow-right"></i> Proceder a Scoring
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Cálculo de Scoring -->
+        <section id="scoring" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-calculator"></i> Cálculo de Score Crediticio - Solicitud #004</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <!-- Configuración de Ponderaciones según UML -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Ponderaciones (Según UML)</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Historial Crediticio</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="40" id="pesoHistorial" onchange="updateScoring()">
+                                        <span id="pesoHistorialValue">40%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ingresos vs Deuda</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="30" id="pesoIngresos" onchange="updateScoring()">
+                                        <span id="pesoIngresosValue">30%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Activos</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="20" id="pesoActivos" onchange="updateScoring()">
+                                        <span id="pesoActivosValue">20%</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Comportamiento</label>
+                                        <input type="range" class="form-input" min="0" max="100" value="10" id="pesoComportamiento" onchange="updateScoring()">
+                                        <span id="pesoComportamientoValue">10%</span>
+                                    </div>
+                                    <small>Total: <span id="totalPonderacion">100%</span></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <!-- Resultado del Scoring -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Score Calculado</h4>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="score-circle">
+                                        <div class="score-text" id="scoreCalculado">82</div>
+                                    </div>
+                                    <h4>Score: <span id="clasificacionScore">Excelente</span></h4>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 82%" id="barraScore"></div>
+                                    </div>
+                                    
+                                    <!-- Desglose del Score -->
+                                    <div class="mt-3">
+                                        <h5>Desglose:</h5>
+                                        <p>Historial: <span id="puntajeHistorial">85</span> pts</p>
+                                        <p>Ingresos: <span id="puntajeIngresos">90</span> pts</p>
+                                        <p>Activos: <span id="puntajeActivos">75</span> pts</p>
+                                        <p>Comportamiento: <span id="puntajeComportamiento">80</span> pts</p>
+                                    </div>
+
+                                    <!-- Decisión Automática -->
+                                    <div class="card mt-3" style="background: rgba(76, 175, 80, 0.1);">
+                                        <div class="card-body">
+                                            <h5><i class="fas fa-robot"></i> Decisión Automática</h5>
+                                            <p><strong>APROBACIÓN AUTOMÁTICA</strong></p>
+                                            <p>Score ≥ 70: Cumple criterios</p>
+                                            <p>Monto recomendado: S/ 50,000</p>
+                                            <p>Tasa sugerida: 11.5% anual</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-1 mt-3">
+                                        <button class="btn btn-success" onclick="aprobarAutomatico()">
+                                            <i class="fas fa-check"></i> Aprobar
+                                        </button>
+                                        <button class="btn btn-warning" onclick="enviarRevisionManual()">
+                                            <i class="fas fa-user"></i> Revisión Manual
+                                        </button>
+                                        <button class="btn btn-secondary" onclick="simularEscenarios()">
+                                            <i class="fas fa-chart-line"></i> Simular
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Revisión Manual -->
+        <section id="revision" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-check"></i> Revisión Manual - Solicitud #005</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Información Completa</h4>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Cliente:</strong> Carlos Mendoza</p>
+                                    <p><strong>Score Automático:</strong> 65</p>
+                                    <p><strong>Monto Solicitado:</strong> S/ 25,000</p>
+                                    <p><strong>Monto Recomendado:</strong> S/ 20,000</p>
+                                    <p><strong>Ingresos Mensuales:</strong> S/ 3,500</p>
+                                    <p><strong>Ratio Deuda/Ingreso:</strong> 35%</p>
+                                    <p><strong>Historial:</strong> 2 créditos previos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Decisión Manual</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>Decisión</label>
+                                        <select class="form-select" id="decisionManual">
+                                            <option value="">Seleccionar decisión</option>
+                                            <option value="aprobar">Aprobar</option>
+                                            <option value="rechazar">Rechazar</option>
+                                            <option value="solicitar_info">Solicitar más información</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Monto Aprobado (S/)</label>
+                                        <input type="number" class="form-input" id="montoManual" value="20000">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tasa de Interés (%)</label>
+                                        <input type="number" class="form-input" id="tasaManual" value="13.5" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Observaciones</label>
+                                        <textarea class="form-input" id="observacionesManual" rows="4" placeholder="Justificación de la decisión..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" onclick="guardarDecisionManual()">
+                                        <i class="fas fa-save"></i> Guardar Decisión
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Simulador de Escenarios</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h5>Escenario 1: Conservador</h5>
+                                    <p>Monto: S/ 15,000</p>
+                                    <p>Tasa: 14% anual</p>
+                                    <p>Riesgo: Bajo</p>
+                                    
+                                    <h5>Escenario 2: Moderado</h5>
+                                    <p>Monto: S/ 20,000</p>
+                                    <p>Tasa: 13.5% anual</p>
+                                    <p>Riesgo: Medio</p>
+                                    
+                                    <h5>Escenario 3: Agresivo</h5>
+                                    <p>Monto: S/ 25,000</p>
+                                    <p>Tasa: 15% anual</p>
+                                    <p>Riesgo: Alto</p>
+                                    
+                                    <button class="btn btn-secondary btn-block mt-3" onclick="generarNuevoEscenario()">
+                                        <i class="fas fa-dice"></i> Nuevo Escenario
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Reportes -->
+        <section id="reportes" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Reportes de Evaluación</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4>25</h4>
+                                    <p>Evaluaciones este mes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4>18</h4>
+                                    <p>Aprobaciones</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4>72%</h4>
+                                    <p>Tasa de aprobación</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <button class="btn btn-primary" onclick="generarReporteCompleto()">
+                            <i class="fas fa-file-pdf"></i> Generar Reporte Completo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Funciones específicas del panel de evaluación
+        
+        function iniciarEvaluacion(id) {
+            showNotification(`Iniciando evaluación de solicitud ${id}`, 'info');
+            showSection('validacion');
+        }
+        
+        function continuarEvaluacion(id) {
+            showNotification(`Continuando evaluación de solicitud ${id}`, 'info');
+            showSection('scoring');
+        }
+        
+        function validarDocumento(tipo, valido) {
+            const mensaje = valido ? `Documento ${tipo} validado` : `Documento ${tipo} rechazado`;
+            const tipoNotif = valido ? 'success' : 'error';
+            showNotification(mensaje, tipoNotif);
+        }
+        
+        function finalizarValidacion() {
+            showNotification('Documentos validados. Procediendo al cálculo de score...', 'success');
+            showSection('scoring');
+        }
+        
+        function updateScoring() {
+            // Actualizar valores de ponderación
+            const historial = document.getElementById('pesoHistorial').value;
+            const ingresos = document.getElementById('pesoIngresos').value;
+            const activos = document.getElementById('pesoActivos').value;
+            const comportamiento = document.getElementById('pesoComportamiento').value;
+            
+            document.getElementById('pesoHistorialValue').textContent = historial + '%';
+            document.getElementById('pesoIngresosValue').textContent = ingresos + '%';
+            document.getElementById('pesoActivosValue').textContent = activos + '%';
+            document.getElementById('pesoComportamientoValue').textContent = comportamiento + '%';
+            
+            const total = parseInt(historial) + parseInt(ingresos) + parseInt(activos) + parseInt(comportamiento);
+            document.getElementById('totalPonderacion').textContent = total + '%';
+            
+            // Recalcular score
+            calcularScoreRealTime();
+        }
+        
+        function calcularScoreRealTime() {
+            // Obtener puntajes base
+            const historialPts = 85;
+            const ingresosPts = 90;
+            const activosPts = 75;
+            const comportamientoPts = 80;
+            
+            // Obtener pesos
+            const pesoHist = document.getElementById('pesoHistorial').value / 100;
+            const pesoIng = document.getElementById('pesoIngresos').value / 100;
+            const pesoAct = document.getElementById('pesoActivos').value / 100;
+            const pesoComp = document.getElementById('pesoComportamiento').value / 100;
+            
+            // Calcular score final
+            const scoreFinal = Math.round(
+                (historialPts * pesoHist) +
+                (ingresosPts * pesoIng) +
+                (activosPts * pesoAct) +
+                (comportamientoPts * pesoComp)
+            );
+            
+            // Actualizar interfaz
+            document.getElementById('scoreCalculado').textContent = scoreFinal;
+            document.getElementById('barraScore').style.width = scoreFinal + '%';
+            
+            // Actualizar clasificación
+            let clasificacion = '';
+            if (scoreFinal >= 80) clasificacion = 'Excelente';
+            else if (scoreFinal >= 70) clasificacion = 'Bueno';
+            else if (scoreFinal >= 60) clasificacion = 'Regular';
+            else clasificacion = 'Deficiente';
+            
+            document.getElementById('clasificacionScore').textContent = clasificacion;
+        }
+        
+        function aprobarAutomatico() {
+            showNotification('Solicitud aprobada automáticamente', 'success');
+        }
+        
+        function enviarRevisionManual() {
+            showNotification('Enviando a revisión manual...', 'info');
+            showSection('revision');
+        }
+        
+        function simularEscenarios() {
+            showNotification('Abriendo simulador de escenarios...', 'info');
+        }
+        
+        function guardarDecisionManual() {
+            const decision = document.getElementById('decisionManual').value;
+            if (!decision) {
+                showNotification('Debe seleccionar una decisión', 'error');
+                return;
+            }
+            
+            showNotification('Decisión guardada exitosamente', 'success');
+        }
+        
+        function generarNuevoEscenario() {
+            showNotification('Generando nuevo escenario...', 'info');
+        }
+        
+        function generarReporteCompleto() {
+            showNotification('Generando reporte en PDF...', 'info');
+        }
+        
+        function actualizarPendientes() {
+            showNotification('Actualizando lista de pendientes...', 'info');
+        }
+        
+        function verDocumento(tipo) {
+            showNotification(`Abriendo documento: ${tipo}`, 'info');
+        }
+        
+        // Función showSection personalizada para esta página
+        function showSection(sectionName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+            }
+        }
+        
+        // Inicializar scoring cuando se carga
+        window.addEventListener('load', function() {
+            loadUserData();
+            calcularScoreRealTime();
+        });
+    </script>
+</body>
+</html>

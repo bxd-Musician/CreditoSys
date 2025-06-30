@@ -1,1 +1,4 @@
 # CreditoSys
+
+GRUPO 3
+SOFTWARE

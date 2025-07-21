@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiar Sesión - CreditoSys</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .info {
+            background: #e8f4fd;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔧 Limpiar Sesión Corrupta</h2>
+        <p>Esta página te ayudará a limpiar datos corruptos del navegador.</p>
+        
+        <div class="info">
+            <h3>Datos actuales en localStorage:</h3>
+            <pre id="currentData">Cargando...</pre>
+        </div>
+        
+        <button class="btn" onclick="limpiarDatos()">🧹 Limpiar Datos Corruptos</button>
+        <button class="btn" onclick="irAlLogin()">🔐 Ir al Login</button>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        function mostrarDatosActuales() {
+            const data = localStorage.getItem('currentUser');
+            const pre = document.getElementById('currentData');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    pre.textContent = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    pre.textContent = 'DATOS CORRUPTOS: ' + data;
+                }
+            } else {
+                pre.textContent = 'No hay datos de usuario';
+            }
+        }
+
+        function limpiarDatos() {
+            localStorage.removeItem('currentUser');
+            document.getElementById('resultado').innerHTML = 
+                '<div style="color: green; margin-top: 1rem;">✅ Datos limpiados exitosamente</div>';
+            mostrarDatosActuales();
+        }
+
+        function irAlLogin() {
+            window.location.href = 'login.html';
+        }
+
+        // Mostrar datos al cargar la página
+        window.addEventListener('load', mostrarDatosActuales);
+    </script>
+</body>
+</html> 

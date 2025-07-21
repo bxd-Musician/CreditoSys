@@ -1,0 +1,18 @@
+# Configuración para manejar errores 404
+ErrorDocument 404 /index.html
+
+# Redireccionar favicon.ico si no existe
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^favicon\.ico$ /favicon.ico [L]
+
+# Permitir acceso a archivos estáticos
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg)$">
+    Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+
+# Configuración de seguridad
+<Files "*.htaccess">
+    Order allow,deny
+    Deny from all
+</Files> 

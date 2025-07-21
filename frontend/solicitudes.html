@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Gestión de Solicitudes</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .user-info-card {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+            font-size: 0.85rem;
+            color: #2c3e50;
+        }
+        
+        .user-info-card small {
+            display: block;
+            margin-bottom: 2px;
+        }
+        
+        .user-info-card span {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        /* Estilos para loading screen */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para notificaciones */
+        .notification {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: white;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.5s ease-out;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success { background-color: #28a745; }
+        .notification.error { background-color: #dc3545; }
+        .notification.info { background-color: #17a2b8; }
+        .notification.warning { background-color: #ffc107; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos para modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        /* Estilos para las estadísticas */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Animación para los números */
+        .stat-number {
+            transition: all 0.3s ease;
+        }
+
+        .stat-number.updated {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <h1>CreditoSys</h1>
+                    <small>Sistema de Gestión de Créditos</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Cargando...</strong>
+                    <br>
+                    <small id="userRole">Usuario</small>
+                    <br>
+                    <small id="userEmail" style="color: #666; font-size: 0.8rem;">cargando@email.com</small>
+                </div>
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="d-flex gap-1">
+                    <a href="dashboard.html" class="btn btn-outline btn-sm">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="nueva_solicitud.html" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Nueva Solicitud
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-file-alt"></i> Gestión de Solicitudes de Crédito</h2>
+                <div class="d-flex gap-1">
+                    <a href="nueva_solicitud.html" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nueva Solicitud
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label class="form-label">Filtrar por Estado</label>
+                            <select class="form-select" id="filtroEstado">
+                                <option value="">Todos los estados</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="aprobada">Aprobadas</option>
+                                <option value="rechazada">Rechazadas</option>
+                                <option value="revision">En Revisión</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label class="form-label">Fecha Desde</label>
+                            <input type="date" class="form-input" id="fechaDesde">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label class="form-label">Fecha Hasta</label>
+                            <input type="date" class="form-input" id="fechaHasta">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label class="form-label">Buscar</label>
+                            <input type="text" class="form-input" id="buscarSolicitud" placeholder="ID o monto...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-number" id="totalSolicitudes">-</div>
+                <div class="stat-label">Total Solicitudes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" id="solicitudesAprobadas">-</div>
+                <div class="stat-label">Aprobadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number" id="solicitudesPendientes">-</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-number" id="solicitudesRechazadas">-</div>
+                <div class="stat-label">Rechazadas</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-list"></i> Lista de Solicitudes</h3>
+                <div class="d-flex gap-1">
+                    <button class="btn btn-secondary btn-sm" onclick="exportarExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="cargarSolicitudes()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table class="table" id="tablaSolicitudes">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Plazo</th>
+                                <th>Propósito</th>
+                                <th>Estado</th>
+                                <th>Score</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solicitudesTableBody">
+                            <tr>
+                                <td colspan="9" class="text-center">Cargando solicitudes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-between align-center mt-3">
+                    <div>
+                        <span>Mostrando 5 de 8 solicitudes</span>
+                    </div>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-outline btn-sm" disabled>
+                            <i class="fas fa-chevron-left"></i> Anterior
+                        </button>
+                        <button class="btn btn-primary btn-sm">1</button>
+                        <button class="btn btn-outline btn-sm">2</button>
+                        <button class="btn btn-outline btn-sm">
+                            Siguiente <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="detalleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalle de Solicitud</h3>
+                <button class="modal-close" onclick="closeModal('detalleModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="contenidoDetalle">
+                </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalDocumentos">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Subir Documentos</h3>
+                <button class="modal-close" onclick="closeModal('modalDocumentos')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="file-upload" onclick="document.getElementById('fileInputModal').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h4>Subir Documentos</h4>
+                    <p>Haz clic aquí o arrastra los archivos</p>
+                    <small>Formatos permitidos: PDF, JPG, PNG (Máx. 50MB)</small>
+                    <input type="file" id="fileInputModal" multiple accept=".pdf,.jpg,.jpeg,.png" style="display: none;"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Funciones auxiliares que usan las funciones globales de script.js
+        function showLoading() { 
+            // Evitar recursión - usar solo implementación local
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('active'); 
+            }
+        }
+        function hideLoading() { 
+            // Evitar recursión - usar solo implementación local
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.remove('active'); 
+            }
+        }
+        function hideLoadingScreen() { 
+            hideLoading(); 
+        }
+        function showNotification(text, type, duration = 4000) { 
+            // Evitar recursión - usar solo implementación local
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            if (notification && notificationText) {
+                notificationText.textContent = text;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            }
+        }
+        function closeModal(id) { 
+            // Evitar recursión - usar solo implementación local
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('active'); 
+            }
+        }
+        function showModal(id) { 
+            // Evitar recursión - usar solo implementación local
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('active'); 
+            }
+        }
+        async function fetchAuthenticated(url, options) { 
+            // Implementación local para evitar recursión
+            const token = window.currentUser ? window.currentUser.access_token : null;
+            if (!token) {
+                throw new Error('No hay token de acceso disponible.');
+            }
+            
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+            
+            return fetch(url, {
+                ...options,
+                headers
+            });
+        }
+        function loadUserData() { 
+            // Evitar recursión infinita - usar solo la implementación local
+            try {
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    const parsedUser = JSON.parse(userData);
+                    console.log('Usuario parseado desde solicitudes.html:', parsedUser);
+                    
+                    // Verificar que el usuario tenga los campos necesarios
+                    if (parsedUser && parsedUser.username && parsedUser.role && parsedUser.access_token) {
+                        window.currentUser = parsedUser;
+                        console.log('Usuario cargado exitosamente desde solicitudes.html:', window.currentUser);
+                        return true;
+                    } else {
+                        console.warn('Usuario incompleto desde solicitudes.html, limpiando datos');
+                        localStorage.removeItem('currentUser');
+                        window.currentUser = null;
+                        return false;
+                    }
+                } else {
+                    console.log('No hay datos de usuario en localStorage (solicitudes.html)');
+                    window.currentUser = null;
+                    return false;
+                }
+            } catch (e) {
+                console.error("Error al cargar datos de usuario desde localStorage (solicitudes.html):", e);
+                localStorage.removeItem('currentUser');
+                window.currentUser = null;
+                return false;
+            }
+        }
+        function updateUserInterface() { 
+            // Usar solo la implementación local para evitar conflictos
+            const userData = window.currentUser;
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const userAvatarElement = document.getElementById('userAvatar');
+            const userEmailElement = document.getElementById('userEmail');
+            
+            // Elementos de la tarjeta de información
+            const userInfoName = document.getElementById('userInfoName');
+            const userInfoRole = document.getElementById('userInfoRole');
+            const userInfoEmail = document.getElementById('userInfoEmail');
+            
+            if (userData && userNameElement && userRoleElement && userAvatarElement) {
+                // Mostrar nombre completo si está disponible
+                const displayName = userData.first_name && userData.last_name ? 
+                    `${userData.first_name} ${userData.last_name}` : 
+                    userData.username || 'Usuario';
+                
+                userNameElement.textContent = displayName;
+                
+                // Mostrar rol con formato mejorado
+                const roleDisplay = userData.role ? 
+                    userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : 'Usuario';
+                userRoleElement.textContent = roleDisplay;
+                
+                // Mostrar email si está disponible
+                if (userEmailElement) {
+                    userEmailElement.textContent = userData.email || 'usuario@creditosys.com';
+                }
+                
+                // Generar iniciales para el avatar
+                let initials = 'U';
+                if (userData.first_name && userData.last_name) {
+                    initials = (userData.first_name.charAt(0) + userData.last_name.charAt(0)).toUpperCase();
+                } else if (userData.username) {
+                    initials = userData.username.charAt(0).toUpperCase();
+                }
+                userAvatarElement.textContent = initials;
+                
+                // Actualizar información en la tarjeta
+                if (userInfoName) userInfoName.textContent = displayName;
+                if (userInfoRole) userInfoRole.textContent = roleDisplay;
+                if (userInfoEmail) userInfoEmail.textContent = userData.email || 'usuario@creditosys.com';
+                
+                console.log('Interfaz de usuario actualizada desde solicitudes.html');
+            } else {
+                console.warn('No se pudo actualizar la interfaz de usuario desde solicitudes.html');
+            }
+        }
+        function logout() { 
+            if (typeof window.logout === 'function') {
+                window.logout();
+            } else {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Función para actualizar las estadísticas basándose en los datos reales
+        function actualizarEstadisticas(solicitudes) {
+            console.log('Actualizando estadísticas con datos:', solicitudes);
+            
+            const total = solicitudes.length;
+            const aprobadas = solicitudes.filter(s => s.status === 'aprobada').length;
+            const pendientes = solicitudes.filter(s => s.status === 'pendiente' || s.status === 'en_revision').length;
+            const rechazadas = solicitudes.filter(s => s.status === 'rechazada').length;
+            
+            // Función para actualizar un elemento con animación
+            function actualizarElementoConAnimacion(elementId, nuevoValor) {
+                const elemento = document.getElementById(elementId);
+                if (elemento) {
+                    const valorAnterior = parseInt(elemento.textContent) || 0;
+                    elemento.textContent = nuevoValor;
+                    
+                    // Agregar animación si el valor cambió
+                    if (valorAnterior !== nuevoValor) {
+                        elemento.classList.add('updated');
+                        setTimeout(() => {
+                            elemento.classList.remove('updated');
+                        }, 500);
+                    }
+                }
+            }
+            
+            // Actualizar los elementos en el DOM con animación
+            actualizarElementoConAnimacion('totalSolicitudes', total);
+            actualizarElementoConAnimacion('solicitudesAprobadas', aprobadas);
+            actualizarElementoConAnimacion('solicitudesPendientes', pendientes);
+            actualizarElementoConAnimacion('solicitudesRechazadas', rechazadas);
+            
+            console.log('Estadísticas actualizadas:', {
+                total,
+                aprobadas,
+                pendientes,
+                rechazadas
+            });
+            
+            // Mostrar notificación si no hay datos
+            if (total === 0) {
+                showNotification('No se encontraron solicitudes con los filtros aplicados', 'info');
+            }
+        }
+
+        // A. Función para cargar las solicitudes desde la API con filtros
+        async function cargarSolicitudes() {
+            showLoading();
+            const tablaBody = document.getElementById('solicitudesTableBody');
+            tablaBody.innerHTML = '<tr><td colspan="9" class="text-center">Cargando todas las solicitudes...</td></tr>';
+
+            // Verificar que el usuario esté autenticado
+            if (!window.currentUser || !window.currentUser.access_token) {
+                console.error('Usuario no autenticado. Redirigiendo al login...');
+                showNotification('Sesión expirada. Redirigiendo al login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                return;
+            }
+
+            // Obtener valores de los filtros
+            const estadoFiltro = document.getElementById('filtroEstado').value;
+            const buscarTexto = document.getElementById('buscarSolicitud').value;
+            const fechaDesde = document.getElementById('fechaDesde').value;
+            const fechaHasta = document.getElementById('fechaHasta').value;
+
+            // Construir la URL de la API con los parámetros de filtro y búsqueda
+            let apiUrl = 'http://localhost:8000/api/applications/?';
+            if (estadoFiltro) {
+                apiUrl += `status=${estadoFiltro}&`;
+            }
+            if (buscarTexto) {
+                apiUrl += `search=${buscarTexto}&`; // El backend usa 'search'
+            }
+            if (fechaDesde) {
+                apiUrl += `start_date=${fechaDesde}&`; // Suponiendo que el backend usa 'start_date'
+            }
+            if (fechaHasta) {
+                apiUrl += `end_date=${fechaHasta}&`; // Suponiendo que el backend usa 'end_date'
+            }
+            
+            // Eliminar el '&' final si existe
+            apiUrl = apiUrl.endsWith('&') ? apiUrl.slice(0, -1) : apiUrl;
+
+            console.log('Intentando cargar solicitudes desde:', apiUrl);
+            console.log('Usuario actual:', window.currentUser);
+
+            try {
+                const response = await fetchAuthenticated(apiUrl, { method: 'GET' });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error en respuesta del servidor:', response.status, errorText);
+                    throw new Error(`Error al cargar las solicitudes. Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Datos recibidos:', data);
+                
+                // Actualizar estadísticas con los datos reales
+                actualizarEstadisticas(data);
+                
+                tablaBody.innerHTML = '';
+                if (data.length === 0) {
+                    tablaBody.innerHTML = '<tr><td colspan="9" class="text-center">No hay solicitudes que coincidan con los filtros.</td></tr>';
+                } else {
+                    data.forEach(solicitud => {
+                        const fila = `
+                            <tr>
+                                <td>${solicitud.id}</td>
+                                <td>${solicitud.client_username || 'N/A'}</td>
+                                <td>${new Date(solicitud.application_date).toLocaleDateString()}</td>
+                                <td>S/ ${solicitud.amount.toLocaleString()}</td>
+                                <td>${solicitud.term_months} meses</td>
+                                <td>${solicitud.purpose || 'N/A'}</td>
+                                <td><span class="status ${solicitud.status}">${solicitud.status}</span></td>
+                                <td>${solicitud.credit_score || '-'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" onclick="verDetalle(${solicitud.id})">Ver</button>
+                                </td>
+                            </tr>
+                        `;
+                        tablaBody.innerHTML += fila;
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar las solicitudes:', error);
+                tablaBody.innerHTML = '<tr><td colspan="9" class="text-center text-danger">Error al cargar las solicitudes.</td></tr>';
+                showNotification(`Error al cargar las solicitudes: ${error.message}`, 'error');
+                
+                // Actualizar estadísticas con datos vacíos en caso de error
+                actualizarEstadisticas([]);
+            } finally {
+                hideLoadingScreen();
+            }
+        }
+
+        // B. Modificar `verDetalle()` para cargar los datos del modal
+        async function verDetalle(id) {
+            showLoading();
+            try {
+                const response = await fetchAuthenticated(`http://localhost:8000/api/applications/${id}/`, { method: 'GET' });
+                
+                if (!response.ok) {
+                    throw new Error('Error al obtener los detalles de la solicitud.');
+                }
+                
+                const solicitud = await response.json();
+                
+                // Rellenar el modal con los datos de la solicitud
+                document.getElementById('contenidoDetalle').innerHTML = `
+                    <div class="row">
+                        <div class="col-6">
+                            <h4>Solicitud #<span id="detalleID">${solicitud.id}</span></h4>
+                            <p><strong>Cliente:</strong> ${solicitud.client_username}</p>
+                            <p><strong>Email:</strong> ${solicitud.client_email}</p>
+                            <p><strong>Monto:</strong> S/ ${solicitud.amount.toLocaleString()}</p>
+                            <p><strong>Plazo:</strong> ${solicitud.term_months} meses</p>
+                            <p><strong>Propósito:</strong> ${solicitud.purpose}</p>
+                            <p><strong>Fecha:</strong> ${new Date(solicitud.application_date).toLocaleDateString()}</p>
+                        </div>
+                        <div class="col-6">
+                            <h4>Evaluación</h4>
+                            <div class="form-group">
+                                <label for="evaluacionStatus"><strong>Estado:</strong></label>
+                                <select class="form-select" id="evaluacionStatus">
+                                    <option value="pendiente" ${solicitud.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+                                    <option value="aprobada" ${solicitud.status === 'aprobada' ? 'selected' : ''}>Aprobada</option>
+                                    <option value="rechazada" ${solicitud.status === 'rechazada' ? 'selected' : ''}>Rechazada</option>
+                                    <option value="revision" ${solicitud.status === 'revision' ? 'selected' : ''}>En Revisión</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="evaluacionScore"><strong>Score:</strong></label>
+                                <input type="number" class="form-input" id="evaluacionScore" value="${solicitud.credit_score || ''}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="evaluacionComentarios"><strong>Comentarios:</strong></label>
+                                <textarea class="form-input" id="evaluacionComentarios">${solicitud.evaluator_comments || ''}</textarea>
+                            </div>
+                            <button type="button" onclick="actualizarEstado()" class="btn btn-success">Guardar Cambios</button>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <h4>Documentos Adjuntos</h4>
+                            <ul id="documentosList"></ul>
+                        </div>
+                    </div>
+                `;
+                
+                // Cargar documentos
+                const documentosList = document.getElementById('documentosList');
+                documentosList.innerHTML = '';
+                if (solicitud.documents && solicitud.documents.length > 0) {
+                    solicitud.documents.forEach(doc => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span>${doc.document_type}</span>
+                            <a href="${doc.file}" target="_blank" class="btn btn-sm btn-outline-info">Ver Documento</a>
+                        `;
+                        documentosList.appendChild(li);
+                    });
+                } else {
+                    documentosList.innerHTML = '<li>No hay documentos adjuntos.</li>';
+                }
+                
+                // Mostrar el modal
+                showModal('detalleModal');
+                
+            } catch (error) {
+                console.error('Error al ver el detalle:', error);
+                showNotification('Error al cargar el detalle de la solicitud. Inténtalo de nuevo.', 'error');
+            } finally {
+                hideLoadingScreen();
+            }
+        }
+
+        // C. Crear la función `actualizarEstado()` para actualizar la solicitud
+        async function actualizarEstado() {
+            showLoading();
+            const idElement = document.getElementById('detalleID');
+            if (!idElement) {
+                console.error("No se encontró el elemento con ID 'detalleID'.");
+                showNotification("Error: No se pudo obtener el ID de la solicitud.", 'error');
+                hideLoadingScreen();
+                return;
+            }
+            const id = idElement.textContent;
+            const nuevoStatus = document.getElementById('evaluacionStatus').value;
+            const nuevoScore = document.getElementById('evaluacionScore').value;
+            const nuevosComentarios = document.getElementById('evaluacionComentarios').value;
+
+            const updateData = {
+                status: nuevoStatus,
+                credit_score: nuevoScore ? parseInt(nuevoScore) : null,
+                evaluator_comments: nuevosComentarios || null
+            };
+
+            try {
+                const response = await fetchAuthenticated(`http://localhost:8000/api/applications/${id}/`, {
+                    method: 'PATCH', // Usar PATCH para actualización parcial
+                    body: JSON.stringify(updateData),
+                    headers: {
+                        'Content-Type': 'application/json' // Añadir Content-Type header
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(JSON.stringify(errorData));
+                }
+
+                showNotification('Solicitud actualizada exitosamente.', 'success');
+                closeModal('detalleModal');
+                cargarSolicitudes(); // Recargar la tabla para ver los cambios
+                
+            } catch (error) {
+                console.error('Error al actualizar la solicitud:', error);
+                showNotification('Error al actualizar la solicitud. Revisa los datos.', 'error');
+            } finally {
+                hideLoadingScreen();
+            }
+        }
+        
+        // Funciones que ya existían pero que ahora usaremos la función cargarSolicitudes
+        function exportarExcel() {
+            showNotification('Exportando a Excel...', 'info');
+        }
+        
+        // La función `actualizarTabla` ahora llama a `cargarSolicitudes` para refrescar los datos.
+        function actualizarTabla() {
+            cargarSolicitudes();
+        }
+
+        // Llama a la función principal al cargar la página y asegura que los filtros actualicen la tabla
+        window.addEventListener('load', function() {
+            console.log('=== INICIALIZANDO PÁGINA SOLICITUDES ===');
+            
+            // Cargar datos del usuario y actualizar interfaz
+            const userLoaded = loadUserData();
+            console.log('Resultado de carga de usuario:', userLoaded);
+            
+            if (userLoaded && window.currentUser) {
+                updateUserInterface();
+                console.log('Usuario cargado exitosamente:', window.currentUser);
+                
+                // Mostrar información detallada del usuario en consola
+                console.log('=== INFORMACIÓN DEL USUARIO ===');
+                console.log('Username:', window.currentUser.username);
+                console.log('Email:', window.currentUser.email);
+                console.log('Rol:', window.currentUser.role);
+                console.log('Nombre completo:', window.currentUser.first_name, window.currentUser.last_name);
+                console.log('DNI:', window.currentUser.dni);
+                console.log('Teléfono:', window.currentUser.phone_number);
+                console.log('================================');
+                
+                // Cargar solicitudes después de verificar el usuario
+                setTimeout(() => {
+                    cargarSolicitudes();
+                }, 500);
+            } else {
+                console.warn('No se pudo cargar datos del usuario');
+                showNotification('Sesión expirada. Redirigiendo al login...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+        });
+
+        // E. Asegúrate de que los filtros llamen a `cargarSolicitudes()`
+        document.getElementById('filtroEstado').addEventListener('change', cargarSolicitudes);
+        document.getElementById('buscarSolicitud').addEventListener('input', cargarSolicitudes);
+        document.getElementById('fechaDesde').addEventListener('change', cargarSolicitudes);
+        document.getElementById('fechaHasta').addEventListener('change', cargarSolicitudes);
+
+        // Función para mostrar estadísticas de filtros aplicados
+        function mostrarEstadisticasFiltros(solicitudes, filtroAplicado) {
+            const totalFiltrado = solicitudes.length;
+            const porcentaje = totalFiltrado > 0 ? ((totalFiltrado / solicitudes.length) * 100).toFixed(1) : 0;
+            
+            console.log(`Filtro aplicado: ${filtroAplicado}`);
+            console.log(`Solicitudes encontradas: ${totalFiltrado}`);
+            console.log(`Porcentaje del total: ${porcentaje}%`);
+        }
+    </script>
+</body>
+</html>

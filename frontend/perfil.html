@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditoSys - Mi Perfil</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="loading" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <div>
+                    <h1>CreditoSys</h1>
+                    <small>Sistema de Gestión de Créditos</small>
+                </div>
+            </div>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Cargando...</strong>
+                    <br>
+                    <small id="userRole">Usuario</small>
+                </div>
+                <div class="user-avatar" id="userAvatar">U</div>
+                <a href="dashboard.html" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-chart-dashboard"></i> Dashboard
+            </button>
+            <button class="nav-tab client-only" onclick="window.location.href='solicitudes.html'">
+                <i class="fas fa-file-alt"></i> Solicitudes
+            </button>
+            <button class="nav-tab client-only" onclick="window.location.href='nueva_solicitud.html'">
+                <i class="fas fa-plus-circle"></i> Nueva Solicitud
+            </button>
+            <button class="nav-tab" onclick="window.location.href='dashboard.html#documentos'">
+                <i class="fas fa-folder-open"></i> Documentos
+            </button>
+            <button class="nav-tab d-none evaluator-admin-only" onclick="window.location.href='evaluacion.html'">
+                <i class="fas fa-search"></i> Evaluación
+            </button>
+            <button class="nav-tab d-none admin-only" onclick="window.location.href='admin.html'">
+                <i class="fas fa-cogs"></i> Administración
+            </button>
+            <button class="nav-tab active">
+                <i class="fas fa-user"></i> Mi Perfil
+            </button>
+        </nav>
+
+        <div class="content-section active">
+            <!-- Sección Mi Perfil -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3><i class="fas fa-user"></i> Mi Perfil</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-4">
+                                <div class="profile-avatar" id="profileAvatar">U</div>
+                                <h4 id="profileName">Cargando...</h4>
+                                <p class="text-muted" id="profileRole">Usuario</p>
+                                <button class="btn btn-outline btn-sm" onclick="cambiarAvatar()">
+                                    <i class="fas fa-camera"></i> Cambiar Avatar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="profile-info">
+                                <h5><i class="fas fa-info-circle"></i> Información Personal</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Nombre Personal</label>
+                                            <input type="text" class="form-input" id="profileUsername" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-input" id="profileEmail" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">DNI</label>
+                                            <input type="text" class="form-input" id="profileDNI" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Teléfono</label>
+                                            <input type="text" class="form-input" id="profilePhone" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Rol</label>
+                                            <input type="text" class="form-input" id="profileRoleInput" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Fecha de Registro</label>
+                                            <input type="text" class="form-input" id="profileDate" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button class="btn btn-primary" onclick="editarPerfil()">
+                                        <i class="fas fa-edit"></i> Editar Perfil
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="cambiarContraseña()">
+                                        <i class="fas fa-key"></i> Cambiar Contraseña
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Estadísticas de Mi Cuenta -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-bar"></i> Estadísticas de Mi Cuenta</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="stat-number" id="profileTotalSolicitudes">0</div>
+                                <div class="stat-label">Total Solicitudes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-number" id="profileSolicitudesAprobadas">0</div>
+                                <div class="stat-label">Aprobadas</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-number" id="profileSolicitudesPendientes">0</div>
+                                <div class="stat-label">Pendientes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-number" id="profileMontoTotal">S/ 0</div>
+                                <div class="stat-label">Monto Total</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas adicionales -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-chart-pie"></i> Distribución por Estado</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="statusChart">
+                                        <div class="text-center text-muted">Cargando estadísticas...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-trending-up"></i> Actividad Reciente</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentActivity">
+                                        <div class="text-center text-muted">Cargando actividad...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar perfil -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Editar Perfil</h3>
+                <button class="modal-close" onclick="closeModal('editProfileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Nombre de Usuario</label>
+                                <input type="text" class="form-input" id="editUsername" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="editEmail" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">DNI</label>
+                                <input type="text" class="form-input" id="editDNI" maxlength="8">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" class="form-input" id="editPhone" maxlength="9">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dirección</label>
+                        <textarea class="form-input" id="editAddress" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarPerfil()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cambiar contraseña -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Cambiar Contraseña</h3>
+                <button class="modal-close" onclick="closeModal('changePasswordModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label class="form-label">Contraseña Actual</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="currentPassword" required>
+                            <button type="button" class="btn btn-outline" onclick="togglePassword('currentPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nueva Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="newPassword" required>
+                            <button type="button" class="btn btn-outline" onclick="togglePassword('newPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="newPasswordStrength"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirmar Nueva Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-input" id="confirmNewPassword" required>
+                            <button type="button" class="btn btn-outline" onclick="togglePassword('confirmNewPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="cambiarContraseñaSubmit()">Cambiar Contraseña</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
